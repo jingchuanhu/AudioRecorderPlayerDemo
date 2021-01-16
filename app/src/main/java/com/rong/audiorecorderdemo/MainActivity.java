@@ -100,6 +100,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        audioManager.close();
+    }
 
     public class RecordCallback implements LocalAudioRecorder.RecorderCallback{
 
