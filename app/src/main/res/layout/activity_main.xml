@@ -38,4 +38,26 @@
         app:layout_constraintLeft_toLeftOf="@+id/start_recorder"
         android:layout_marginTop="50dp"/>
 
+    <Button
+        android:id="@+id/btn_init_audio_route"
+        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/stop_recorder"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="20dp"
+        android:onClick="onClick"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="wrap_content"
+        android:text="初始化AudioRoute"/>
+
+    <Button
+        android:id="@+id/btn_unInit_auio_route"
+        android:layout_width="wrap_content"
+        android:text="注销AudioRoute"
+        android:onClick="onClick"
+        app:layout_constraintTop_toBottomOf="@id/btn_init_audio_route"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"/>
+
 </android.support.constraint.ConstraintLayout>

@@ -8,7 +8,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+
+import com.rong.audiorecorderdemo.rong.RCRTCAudioRouteManager;
+import com.rong.audiorecorderdemo.rtc.AppRTCAudioManager;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -17,9 +21,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final String TAG = "MainActivity";
     private static final String[] MANDATORY_PERMISSIONS = {
             "android.permission.MODIFY_AUDIO_SETTINGS",
             "android.permission.RECORD_AUDIO",
@@ -38,14 +43,15 @@ public class MainActivity extends AppCompatActivity {
         recorder = new LocalAudioRecorder(44100);
         recorder.setRecordCallback(new RecordCallback());
         audioTrack = new LocalAudioTrack(44100, 1);
-        audioManager = AppRTCAudioManager.create(getApplicationContext(), new Runnable() {
-            @Override
-            public void run() {
 
-            }
-        });
+    }
 
-        audioManager.init();
+    public class MyAudioManagerEvent implements AppRTCAudioManager.AudioManagerEvents{
+
+        @Override
+        public void onAudioDeviceChanged(AppRTCAudioManager.AudioDevice selectedAudioDevice, Set<AppRTCAudioManager.AudioDevice> availableAudioDevices) {
+            Log.d(TAG, "onAudioDeviceChanged: "  + selectedAudioDevice.name());
+        }
     }
 
     private void startRecorder(){
@@ -60,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
         recorder.startRecord(filePath);
         audioTrack.start();
-
     }
 
     public void checkPermissions() {
@@ -131,6 +136,23 @@ public class MainActivity extends AppCompatActivity {
                 audioTrack.stop();
                 break;
             }
+
+            case R.id.btn_init_audio_route:{
+                audioManager = AppRTCAudioManager.create(getApplicationContext());
+
+                audioManager.start(new MyAudioManagerEvent());
+//                RCRTCAudioRouteManager.getInstance().init(getApplicationContext());
+                break;
+            }
+
+            case R.id.btn_unInit_auio_route:{
+                if (audioManager != null){
+                    audioManager.stop();
+                    audioManager = null;
+                }
+//                RCRTCAudioRouteManager.getInstance().unInit();
+                break;
+            }
             default:{
 
 
@@ -138,5 +160,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         checkPermissions();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        audioManager.close();
     }
 }

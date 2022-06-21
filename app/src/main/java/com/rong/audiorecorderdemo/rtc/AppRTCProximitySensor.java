@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-package com.rong.audiorecorderdemo;
+package com.rong.audiorecorderdemo.rtc;
 
 import android.content.Context;
 import android.hardware.Sensor;
