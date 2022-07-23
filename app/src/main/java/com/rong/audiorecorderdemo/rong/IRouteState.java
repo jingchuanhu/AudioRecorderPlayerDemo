@@ -7,5 +7,9 @@ public interface IRouteState {
 
     void cancelState();
 
+    void start();
+
+    void stop();
+
     RCAudioRouteType getType();
 }

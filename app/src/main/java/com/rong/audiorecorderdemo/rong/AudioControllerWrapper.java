@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.media.AudioManager;
+import android.util.Log;
 
 public class AudioControllerWrapper {
     public static final String ACTION_HEADSET_PLUG = AudioManager.ACTION_HEADSET_PLUG;
@@ -102,6 +103,7 @@ public class AudioControllerWrapper {
 
     @SuppressLint("WrongConstant")
     public void setSco(boolean on, boolean isRetry, boolean needClose) {
+        Log.d(TAG, "setSco on:" + on + " isRetry:"+isRetry + " needClose: " + needClose);
         if (null != mAudioManager) {
             if (on) {
                 if (!isRetry) {

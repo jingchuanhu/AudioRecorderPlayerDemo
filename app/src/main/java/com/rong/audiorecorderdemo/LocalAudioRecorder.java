@@ -126,7 +126,7 @@ public class LocalAudioRecorder {
                 Log.d(TAG, "initRecordingInside audioRecorder params : rate " + simpleRate + " ,channel: " + CHANNEL
                         + " , audioformat: " + ENCODING + " preBuytes: " + bufferSizeInBytes);
                 audioRecord =
-                        new AudioRecord(MediaRecorder.AudioSource.VOICE_COMMUNICATION, simpleRate, CHANNEL, ENCODING,
+                        new AudioRecord(MediaRecorder.AudioSource.MIC, simpleRate, CHANNEL, ENCODING,
                                 bufferSizeInBytes);
             }
 

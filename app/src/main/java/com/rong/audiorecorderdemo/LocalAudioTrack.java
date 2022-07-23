@@ -30,21 +30,19 @@ public class LocalAudioTrack {
     this.sampleRate = sampleRate;
     this.channels = channels;
 
-    int minBufferSizeInBytes = AudioTrack
-        .getMinBufferSize(sampleRate, channelCountToConfiguration(channels),
-            AudioFormat.ENCODING_PCM_16BIT);
+
     audioTrack = createAudioTrack(sampleRate, channels);
   }
 
   private AudioTrack createAudioTrack(int sampleRate, int channels) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      int bufferSizeInBytes =
-          AudioTrack.getMinBufferSize(
-              sampleRate, channels, AudioFormat.ENCODING_PCM_16BIT);
+      int minBufferSizeInBytes = AudioTrack
+              .getMinBufferSize(sampleRate, channelCountToConfiguration(channels),
+                      AudioFormat.ENCODING_PCM_16BIT);
       return new AudioTrack(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
           .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build(),
           new AudioFormat.Builder().setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-              .setSampleRate(sampleRate).setChannelMask(channels).build(), bufferSizeInBytes,
+              .setSampleRate(sampleRate).setChannelMask(channels).build(), minBufferSizeInBytes,
           AudioTrack.MODE_STREAM, AudioManager.AUDIO_SESSION_ID_GENERATE);
     } else {
       return new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,

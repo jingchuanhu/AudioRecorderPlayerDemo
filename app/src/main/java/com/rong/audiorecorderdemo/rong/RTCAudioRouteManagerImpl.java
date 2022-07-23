@@ -12,7 +12,6 @@ import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.support.annotation.RequiresPermission;
 import android.util.Log;
 
 
@@ -38,6 +37,7 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
     IRouteState mBtHeadSetState = new BtHeadSetState();
     boolean mUserSpeakerSet = true;
     private boolean initFlag = false;
+    private RCBluetoothEventsManager bluetoothEventsManager;
 
     private static volatile RTCAudioRouteManagerImpl INSTANCE = null;
 
@@ -103,6 +103,16 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
         }
 
         @Override
+        public void start() {
+
+        }
+
+        @Override
+        public void stop() {
+
+        }
+
+        @Override
         public RCAudioRouteType getType() {
             if (mUserSpeakerSet) {
                 return RCAudioRouteType.SPEAKER_PHONE;
@@ -130,6 +140,16 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
         }
 
         @Override
+        public void start() {
+
+        }
+
+        @Override
+        public void stop() {
+
+        }
+
+        @Override
         public void cancelState() {
             Log.d("AudioRouteManager","cancelState HeadSetState");
         }
@@ -144,7 +164,7 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
 
         @Override
         public void setSpeakerphoneOn(boolean on) {
-            Log.d("AudioRouteManager",
+            Log.d("",
                     "setSpeakerphoneOn BtHeadSetState");
         }
 
@@ -152,9 +172,23 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
         public void recoverState() {
             Log.d("AudioRouteManager",
                     "recoverState BtHeadSetState");
-            if (null != mAudioControllerWrapper) {
-                mAudioControllerWrapper.setSpeakerphoneOn(false);
-                mAudioControllerWrapper.setSco(true, false);
+//            if (null != mAudioControllerWrapper) {
+//                mAudioControllerWrapper.setSco(true, false);
+//                mAudioControllerWrapper.setSpeakerphoneOn(false);
+//            }
+        }
+
+        @Override
+        public void start() {
+            if (mAudioControllerWrapper != null){
+                mAudioControllerWrapper.setSco(true, false, false);
+            }
+        }
+
+        @Override
+        public void stop() {
+            if (mAudioControllerWrapper != null){
+                mAudioControllerWrapper.setSco(false, false, false);
             }
         }
 
@@ -170,6 +204,50 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
         @Override
         public RCAudioRouteType getType() {
             return RCAudioRouteType.HEADSET_BLUETOOTH;
+        }
+    }
+
+    private class BluetoothEvents implements RCBluetoothEventsManager.BluetoothEvents{
+
+        @Override
+        public void onDeviceConnected() {
+            mStateManager.removeAndOffer(mBtHeadSetState);
+            stateOperation();
+        }
+
+        @Override
+        public void onDeviceDisconnected() {
+            mStateManager.removeAndOffer(mIdleState);
+            stateOperation();
+        }
+
+        @Override
+        public void onStartBlueTooth() {
+            if (mCurrentState == mBtHeadSetState){
+                mCurrentState.start();
+            }
+        }
+
+        @Override
+        public void onStopBlueTooth() {
+            if (mCurrentState == mBtHeadSetState){
+                mCurrentState.stop();
+            }
+        }
+
+        @Override
+        public void onBlueToothStarted() {
+
+        }
+
+        @Override
+        public void onBlueToothStopped() {
+
+        }
+
+        @Override
+        public void onBlueToothStartFailed(RCBluetoothEventsManager.BluetoothError error) {
+
         }
     }
 
@@ -222,7 +300,7 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
         public static final String TOKEN_RETRY_OPEN_SCO = "TOKEN_RETRY_OPEN_SCO";
         private final AtomicInteger retryOpenScoTimes = new AtomicInteger(MAX_RETRY_OPEN_SCO_TIMES);
 
-        private void internaProcess(Context context, Intent intent) {
+        private void internalProcess(Context context, Intent intent) {
             String action = intent.getAction();
             Log.d(TAG, "internaProcess : " + "action = " + action);
             if (null == action) {
@@ -320,7 +398,7 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
                     } else {
                         // 5 次都失败，则移除蓝牙态
                         mStateManager.remove(mBtHeadSetState);
-                        Log.d("AudioRouteManager", "desc open sco failed");
+                        Log.e("AudioRouteManager", "desc open sco failed");
 
                         IRCRTCAudioRouteListener audioRouteListener = mAudioRouteListener;
                         if (audioRouteListener != null) {
@@ -397,7 +475,7 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
                     new Runnable() {
                         @Override
                         public void run() {
-                            internaProcess(context, intent);
+                            internalProcess(context, intent);
                             stateOperation();
                         }
                     });
@@ -451,20 +529,24 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
                         mStateManager = new StateManager();
                         mStateManager.add(mIdleState);
                         mHeadsetReceiver = new HeadsetBroadcastReceiver();
-                        mBtHeadsetReceiver = new BtHeadsetBroadcastReceiver();
+//                        mBtHeadsetReceiver = new BtHeadsetBroadcastReceiver();
                         mContext.registerReceiver(
                                 mHeadsetReceiver,
                                 new IntentFilter(AudioControllerWrapper.ACTION_HEADSET_PLUG));
-                        IntentFilter btIntentFilter = new IntentFilter();
-                        btIntentFilter.addAction(
-                                AudioControllerWrapper.ACTION_CONNECTION_STATE_CHANGED);
-                        btIntentFilter.addAction(AudioControllerWrapper.ACTION_AUDIO_STATE_CHANGED);
-                        btIntentFilter.addAction(
-                                AudioControllerWrapper.ACTION_SCO_AUDIO_STATE_UPDATED);
-                        btIntentFilter.addAction(AudioControllerWrapper.ACTION_STATE_CHANGED);
-                        btIntentFilter.addAction(
-                                AudioControllerWrapper.ACTION_BTADAPTER_CONNECTION_STATE_CHANGED);
-                        mContext.registerReceiver(mBtHeadsetReceiver, btIntentFilter);
+                        bluetoothEventsManager = RCBluetoothEventsManager.create(context);
+                        bluetoothEventsManager.setEvents(new BluetoothEvents());
+                        bluetoothEventsManager.start();
+
+//                        IntentFilter btIntentFilter = new IntentFilter();
+//                        btIntentFilter.addAction(
+//                                AudioControllerWrapper.ACTION_CONNECTION_STATE_CHANGED);
+//                        btIntentFilter.addAction(AudioControllerWrapper.ACTION_AUDIO_STATE_CHANGED);
+//                        btIntentFilter.addAction(
+//                                AudioControllerWrapper.ACTION_SCO_AUDIO_STATE_UPDATED);
+//                        btIntentFilter.addAction(AudioControllerWrapper.ACTION_STATE_CHANGED);
+//                        btIntentFilter.addAction(
+//                                AudioControllerWrapper.ACTION_BTADAPTER_CONNECTION_STATE_CHANGED);
+//                        mContext.registerReceiver(mBtHeadsetReceiver, btIntentFilter);
                         try {
                             resetAudioRouteStateInternal();
                         } catch (Exception e) {
@@ -492,7 +574,7 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
     }
 
     private void resetAudioRouteStateInternal() {
-        Log.d("AudioRouteManager", "");
+        Log.d("AudioRouteManager", "resetAudioRouteStateInternal");
         checkInit();
         mStateManager.remove(mHeadSetState);
         mStateManager.remove(mBtHeadSetState);
@@ -621,10 +703,16 @@ public class RTCAudioRouteManagerImpl extends RCRTCAudioRouteManager {
                         }
 
                         mContext.unregisterReceiver(mHeadsetReceiver);
-                        mContext.unregisterReceiver(mBtHeadsetReceiver);
+//                        mContext.unregisterReceiver(mBtHeadsetReceiver);
                         if (mainThreadHandler != null) {
                             mainThreadHandler.removeCallbacksAndMessages(this);
                         }
+
+                        if (bluetoothEventsManager != null){
+                            bluetoothEventsManager.stop();
+                            bluetoothEventsManager = null;
+                        }
+
                         mAudioRouteListener = null;
                         mCurrentState = null;
                         mContext = null;

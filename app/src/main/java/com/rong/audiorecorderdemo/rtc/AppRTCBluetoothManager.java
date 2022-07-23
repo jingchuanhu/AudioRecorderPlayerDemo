@@ -35,12 +35,12 @@ import java.util.Set;
  * AppRTC demo.
  */
 public class AppRTCBluetoothManager {
-  private static final String TAG = "AppRTCBluetoothManager";
+  private static final String TAG = "AppRTCAudioManager BT";
 
   // Timeout interval for starting or stopping audio to a Bluetooth SCO device.
   private static final int BLUETOOTH_SCO_TIMEOUT_MS = 4000;
   // Maximum number of SCO connection attempts.
-  private static final int MAX_SCO_CONNECTION_ATTEMPTS = 2;
+  private static final int MAX_SCO_CONNECTION_ATTEMPTS = 5;
 
   // Bluetooth connection state.
   public enum State {

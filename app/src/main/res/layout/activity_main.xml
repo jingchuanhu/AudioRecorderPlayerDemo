@@ -6,15 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/start_recorder"
         android:layout_width="wrap_content"
@@ -22,10 +13,10 @@
         android:background="@color/colorPrimaryDark"
         android:onClick="onClick"
         android:text="recorder"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/stop_recorder"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/stop_recorder"
@@ -34,30 +25,75 @@
         android:text="stop"
         android:onClick="onClick"
         android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@id/start_track"
         app:layout_constraintTop_toBottomOf="@id/start_recorder"
-        app:layout_constraintLeft_toLeftOf="@+id/start_recorder"
-        android:layout_marginTop="50dp"/>
+        app:layout_constraintLeft_toLeftOf="@+id/start_recorder" />
 
     <Button
-        android:id="@+id/btn_init_audio_route"
         android:layout_width="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/stop_recorder"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/start_track"
+        android:text="start play"
         android:onClick="onClick"
+        app:layout_constraintTop_toBottomOf="@id/stop_recorder"
+        app:layout_constraintBottom_toTopOf="@id/stop_track"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <Button
+        android:id="@+id/stop_track"
+        android:text="stop play"
+        android:onClick="onClick"
+        app:layout_constraintTop_toBottomOf="@id/start_track"
+        app:layout_constraintBottom_toTopOf="@id/btn_rtc_audio_start_manger"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btn_rtc_audio_start_manger"
+        android:layout_width="wrap_content"
+        android:onClick="onClick"
+        app:layout_constraintTop_toBottomOf="@id/stop_track"
+        app:layout_constraintBottom_toTopOf="@id/btn_rtc_audio_stop_mnger"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_height="wrap_content"
         android:text="初始化AudioRoute"/>
 
     <Button
-        android:id="@+id/btn_unInit_auio_route"
+        android:id="@+id/btn_rtc_audio_stop_mnger"
         android:layout_width="wrap_content"
         android:text="注销AudioRoute"
         android:onClick="onClick"
-        app:layout_constraintTop_toBottomOf="@id/btn_init_audio_route"
+        app:layout_constraintTop_toBottomOf="@id/btn_rtc_audio_start_manger"
+        app:layout_constraintBottom_toTopOf="@id/btn_init_rc_mnger"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="20dp"
         android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btn_init_rc_mnger"
+        android:layout_width="wrap_content"
+        android:text="注册 RC AudioRoute"
+        android:onClick="onClick"
+        app:layout_constraintTop_toBottomOf="@id/btn_rtc_audio_stop_mnger"
+        app:layout_constraintBottom_toTopOf="@id/btn_unInit_rc_route"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btn_unInit_rc_route"
+        android:layout_width="wrap_content"
+        android:text="注销 RC　AudioRoute"
+        android:onClick="onClick"
+        app:layout_constraintTop_toBottomOf="@id/btn_init_rc_mnger"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="wrap_content"/>
+
 
 </android.support.constraint.ConstraintLayout>

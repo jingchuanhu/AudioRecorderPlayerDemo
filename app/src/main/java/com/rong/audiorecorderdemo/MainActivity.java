@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.rong.audiorecorderdemo.rong.RCBluetoothEventsManager;
 import com.rong.audiorecorderdemo.rong.RCRTCAudioRouteManager;
+import com.rong.audiorecorderdemo.rong.RTCAudioRouteManagerImpl;
 import com.rong.audiorecorderdemo.rtc.AppRTCAudioManager;
 
 import java.io.File;
@@ -77,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         }
         if (unGrantedPermissions.size() == 0) {//已经获得了所有权限，开始加入聊天室
 
-
         } else {//部分权限未获得，重新请求获取权限
             String[] array = new String[unGrantedPermissions.size()];
             ActivityCompat.requestPermissions(this, unGrantedPermissions.toArray(array), 0);
@@ -108,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        audioManager.close();
     }
 
     public class RecordCallback implements LocalAudioRecorder.RecorderCallback{
@@ -130,27 +130,45 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
 
-            case R.id.stop_recorder:{
+            case R.id.stop_track:{
+                audioTrack.stop();
+                break;
+            }
 
+
+            case R.id.start_track:{
+                audioTrack.start();
+                break;
+            }
+
+            case R.id.stop_recorder:{
                 recorder.stopRecord();
                 audioTrack.stop();
                 break;
             }
 
-            case R.id.btn_init_audio_route:{
+            case R.id.btn_rtc_audio_start_manger:{
                 audioManager = AppRTCAudioManager.create(getApplicationContext());
-
                 audioManager.start(new MyAudioManagerEvent());
-//                RCRTCAudioRouteManager.getInstance().init(getApplicationContext());
                 break;
             }
 
-            case R.id.btn_unInit_auio_route:{
+            case R.id.btn_rtc_audio_stop_mnger:{
                 if (audioManager != null){
                     audioManager.stop();
                     audioManager = null;
                 }
-//                RCRTCAudioRouteManager.getInstance().unInit();
+                break;
+            }
+
+            case R.id.btn_init_rc_mnger:{
+                RCRTCAudioRouteManager.getInstance().init(getApplicationContext());
+//                ((RTCAudioRouteManagerImpl)RCRTCAudioRouteManager.getInstance()).setSpeakerphoneOn(true);
+                break;
+            }
+
+            case R.id.btn_unInit_rc_route:{
+                RCRTCAudioRouteManager.getInstance().unInit();
                 break;
             }
             default:{
@@ -162,9 +180,8 @@ public class MainActivity extends AppCompatActivity {
         checkPermissions();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        audioManager.close();
+    private void stopTrack(){
+
     }
+
 }
